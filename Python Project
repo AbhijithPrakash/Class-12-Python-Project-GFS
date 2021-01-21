@@ -1,0 +1,326 @@
+import tkinter as tk
+from tkinter import *
+import mysql.connector
+
+DatabaseName1 = 'hotel_management_stock'
+mysql_user = 'root'
+mysql_password = 'root'
+
+def about_this_project():
+  def btn_ok_c():
+    screen1.destroy()
+  global screen1
+  screen1 = Toplevel(root)
+  screen1.title("About this Project")
+  msg = Label(screen1, text = "This project is made using\n tkinter and mysql.connector. \n  We used tkinter to make the  \n gui so that users can understand\n  the program easily and mysql.connector \n for all the tables that is in the program.", font = ("Tahoma", 25, "bold"), fg = "Purple", justify = "center").grid(row = 1, column = 1, columnspan = 2, padx = 10, pady = 10)
+  btn_ok = Button(screen1, text = "Done", font = ("Tahoma", 15, "bold"), fg = "white", justify = "center", bg = "black", command = btn_ok_c).grid(row=2,column=1, padx=10, pady=10, columnspan = 2)
+
+def ok_1_command():
+  login_sucess()
+  screen4.destroy()
+
+def ok_2_command():
+  room_info = room_value.get()
+  airconditioner_info = airconditioner_value.get()
+  crockeryitem_info = crockeryitem_value.get()
+  spice_info = spice_value.get()
+  table_info = table_value.get()
+  chair_info = chair_value.get()
+
+  if room_info != '':  
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Rooms';".format(room_info))
+    dbl3.commit()
+  if airconditioner_info != '':    
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Air Conditioners';".format(airconditioner_info))
+    dbl3.commit()
+  if crockeryitem_info != '':
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Crockery Items';".format(crockeryitem_info))
+    dbl3.commit()
+  if spice_info != '':
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Spices';".format(spice_info))
+    dbl3.commit()
+  if table_info != '':
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Tables';".format(table_info))
+    dbl3.commit()
+  if chair_info != '':
+    cursor3.execute("UPDATE stock_list SET Stock = {} WHERE Item = 'Chairs';".format(chair_info))
+    dbl3.commit()
+  
+  login_sucess()
+  screen4.destroy()
+
+def queryChoice1():
+  
+  dbl3 = mysql.connector.connect(host = "localhost" ,user = mysql_user, passwd = mysql_password)
+  cursor3 = dbl3.cursor()
+  cursor3.execute("USE {};".format(DatabaseName1))
+  cursor3.execute("SHOW TABLES LIKE 'stock_list'; ")
+  cursor3.fetchone()
+  rowcount2 = cursor3.rowcount
+  if rowcount2 == 1:
+    global screen4
+    screen4 = Toplevel(root)
+    screen4.title("Want to view the stock?")
+    screen4.resizable(width=False, height=False)
+    connector_choice1 = dbl3.cursor()
+    connector_choice1.execute("SELECT * FROM stock_list limit 0,10")
+    i1=0 
+    for stocks in connector_choice1: 
+        for j1 in range(len(stocks)):
+            e = Entry(screen4, width=20, font = ("Tahoma", 20), fg = "Black", justify = "center")
+            e.grid(row=i1, column=j1, padx = 10, pady = 10)
+            e.insert(END, stocks[j1])
+        i1=i1+1
+    ok1 = Button(screen4, text = "Ok", font = ("Tahoma", 12, "bold"), fg = "white", justify = "center", bg = "black", command = ok_1_command).grid(row = 7, column = 0, columnspan = 2, padx = 20, pady = 10)
+    screen4.mainloop()
+    
+  else:
+    queryChoice2()
+
+  
+def queryChoice2():
+  
+  global cursor3
+  global dbl3
+  global room_value
+  global airconditioner_value
+  global crockeryitem_value
+  global spice_value
+  global table_value
+  global chair_value
+  
+  global rooms_name
+  global airconditioners_name
+  global crockeryitems_name
+  global spices_name
+  global tables_name
+  global chairs_name
+  
+  room_value = StringVar()
+  airconditioner_value = StringVar()
+  crockeryitem_value = StringVar()
+  spice_value = StringVar()
+  table_value = StringVar()
+  chair_value = StringVar()
+
+  dbl3 = mysql.connector.connect(host = "localhost", user = mysql_user, passwd = mysql_password)
+  cursor3 = dbl3.cursor()
+  cursor3.execute("USE {};".format(DatabaseName1))
+  cursor3.execute("SHOW TABLES LIKE 'stock_list'; ")
+  cursor3.fetchone()
+  rowcount2 = cursor3.rowcount
+  if rowcount2 == 1:
+    global screen4
+    screen4 = Toplevel(root)
+    screen4.title("Want to add/modify items to the stock?")
+    screen4.resizable(width=False, height=False)
+    item_name = Label(screen4, text = "Items", font = ("Tahoma", 20), fg = "black", justify = "center", relief = FLAT).grid(row = 0, column = 0, columnspan = 2, padx = 20, pady = 10)
+    stocks_name = Label(screen4, text = "Stocks", font = ("Tahoma", 20), fg = "black", justify = "center", relief = FLAT).grid(row = 0, column = 2, padx = 20, pady = 10)
+    rooms_name = Label(screen4, text = "Rooms", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 1, column = 0, columnspan = 2, padx = 20, pady = 10)
+    rooms_value = Entry(screen4, textvariable = room_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 1, column = 2, padx = 20, pady = 10)
+    airconditioners_name = Label(screen4, text = "Air Conditioner", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 2, column = 0, columnspan = 2, padx = 20, pady = 10)
+    airconditioners_value = Entry(screen4, textvariable = airconditioner_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 2, column = 2, padx = 20, pady = 10)
+    crockeryitems_name = Label(screen4, text = "Crockery Items", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 3, column = 0, columnspan = 2, padx = 20, pady = 10)
+    crockeryitems_value = Entry(screen4, textvariable = crockeryitem_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 3, column = 2, padx = 20, pady = 10)
+    spices_name = Label(screen4, text = "Spices", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 4, column = 0, columnspan = 2, padx = 20, pady = 10)
+    spices_value = Entry(screen4, textvariable = spice_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 4, column = 2, padx = 20, pady = 10)
+    tables_name= Label(screen4, text = "Tables", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 5, column = 0, columnspan = 2, padx = 20, pady = 10)
+    tables_value = Entry(screen4, textvariable = table_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 5, column = 2, padx = 20, pady = 10)
+    chairs_name= Label(screen4, text = "Chairs", font = ("Tahoma", 17), fg = "black", justify = "center", relief = FLAT).grid(row = 6, column = 0, columnspan = 2, padx = 20, pady = 10)
+    chairs_value = Entry(screen4, textvariable = chair_value, relief = FLAT, font = ("Tahoma", 17)).grid(row = 6, column = 2, padx = 20, pady = 10)
+    ok2 = Button(screen4, text = "Submit", font = ("Tahoma", 12, "bold"), fg = "white", justify = "center", bg = "black", command = ok_2_command).grid(row = 7, column = 1, padx = 20, pady = 10, columnspan = 2)
+        
+  else:
+    cursor3.execute("CREATE TABLE stock_list ( Item varchar(20) not null PRIMARY KEY, Stock integer(50) not null);")
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Rooms', 0);")
+    dbl3.commit()
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Air Conditioners', 0);")
+    dbl3.commit()
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Crockery Items', 0);")
+    dbl3.commit()
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Spices', 0);")
+    dbl3.commit()
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Tables', 0);")
+    dbl3.commit()
+    cursor3.execute("INSERT INTO stock_list (Item, Stock) VALUES ('Chairs', 0);")
+    dbl3.commit()
+    
+    queryChoice2()
+    
+
+def query_choice_check():
+  if query_choice==1:
+    queryChoice1()
+  elif query_choice==2:
+    queryChoice2()
+  else:
+    queryChoice1()
+
+def login_sucess():
+  def query_submitButton():
+    global query_choice
+    query_choice = query1.get()
+    screen3.destroy()
+    query_choice_check()
+
+  def query_logout1():
+    screen3.destroy()
+  
+  query1=IntVar()
+  global screen3
+  screen3 = Toplevel(root)
+  screen3.title("Login Successful")
+  screen3.resizable(width=False, height=False)
+  logout = Button(screen3, text = "Logout", bg = "Black", fg = "white", command = query_logout1).grid(row = 0, column = 4, padx = 20, pady = 10)
+  query_radiobutton1 = Radiobutton(screen3, text="Want to view the stock?", variable = query1, value = 1).grid(row = 2, column = 0, columnspan = 4, padx = 20, pady = 10)
+  query_radiobutton2 = Radiobutton(screen3, text="Want to add/modify items to the stock?", variable = query1, value = 2).grid(row = 4, column = 0, columnspan = 4, padx = 20, pady = 10)
+  query_submit=Button(screen3, text = "Submit", bg = "Black", fg = "white", command = query_submitButton).grid(row = 6, column = 2, padx = 20, pady = 10)
+  
+def register_user():
+    username_info = username.get()
+    password_info = password.get()
+
+    dbl1 = mysql.connector.connect(host = "localhost", user = mysql_user, passwd = mysql_password)
+    cursor1 = dbl1.cursor()
+    cursor1.execute("show databases")
+    cursor1_lst = cursor1.fetchall()
+    cursor1_name1 = DatabaseName1
+    if (cursor1_name1,) in cursor1_lst:
+        cursor1.execute("USE {};".format(cursor1_name1))
+        register_sql_1 = "INSERT INTO profiles VALUES (%s, %s)"
+        register_val = (username_info,password_info)
+        cursor1.execute(register_sql_1, register_val)
+        dbl1.commit()
+        
+    else:
+        cursor1.execute("create database {};".format(cursor1_name1))
+        cursor1.execute("USE {};".format(cursor1_name1))
+        cursor1.execute("CREATE TABLE profiles ( Username varchar(20) not null PRIMARY KEY, Password varchar(20) not null);")
+        register_user()
+        
+    username_entry.delete(0, END)
+    password_entry.delete(0, END)
+    
+    Label(screen1, text = "Registration Successful", fg = "green" ,font = ("calibri", 11)).pack()
+
+
+def login_verify():
+  
+    username1 = username_verify.get()
+    password1 = password_verify.get()
+    
+    username_entry1.delete(0, END)
+    password_entry1.delete(0, END)
+
+    dbl2 = mysql.connector.connect(host = "localhost", user = mysql_user, passwd = mysql_password)
+    cursor2 = dbl2.cursor()
+    cursor2_name1 = DatabaseName1
+    
+    cursor2.execute("USE {};".format(cursor2_name1))
+    login_sql_1 = "SELECT * FROM profiles WHERE Username = %s AND Password = %s;"
+    login_val = (username1,password1)
+    cursor2.execute(login_sql_1, login_val)
+
+    cursor2.fetchone()
+    rowcount = cursor2.rowcount
+    
+    if rowcount == 1:
+        Label(screen2, text = "Login successfully", fg = "Green" ,font = ("calibri", 11)).pack()
+        screen2.destroy()
+        login_sucess()  
+    else :
+        Label(screen2, text = "Incorrect Username or Password.", fg = "red" ,font = ("calibri", 11)).pack()
+                
+                
+  
+
+def register():
+    global screen1
+    screen1 = Toplevel(root)
+    screen1.title("Register")
+    screen1.geometry("300x250")
+
+    global username
+    global password
+    global username_entry
+    global password_entry
+    username = StringVar()
+    password = StringVar()
+
+    Label(screen1, text = "Please enter details below to register").pack()
+    Label(screen1, text = "").pack()
+    Label(screen1, text = "Username").pack()
+
+    username_entry = Entry(screen1, textvariable = username)
+    username_entry.pack()
+    Label(screen1, text = "Password").pack()
+    password_entry =  Entry(screen1, textvariable = password,show = '*')
+    password_entry.pack()
+    Label(screen1, text = "").pack()
+    Button(screen1, text = "Register", width = 10, height = 1, command = register_user, bg = 'black', fg = 'white').pack()
+
+def login():
+    global screen2
+    screen2 = Toplevel(root)
+    screen2.title("Login")
+    screen2.geometry("300x250")
+    Label(screen2, text = "Please enter details below to login").pack()
+    Label(screen2, text = "").pack()
+
+    global username_verify
+    global password_verify
+
+    username_verify = StringVar()
+    password_verify = StringVar()
+
+    global username_entry1
+    global password_entry1
+
+    Label(screen2, text = "Username").pack()
+    username_entry1 = Entry(screen2, textvariable = username_verify)
+    username_entry1.pack()
+    Label(screen2, text = "").pack()
+    Label(screen2, text = "Password").pack()
+    password_entry1 = Entry(screen2, textvariable = password_verify,show = '*')
+    password_entry1.pack()
+    Label(screen2, text = "").pack()
+    Button(screen2, text = "Login", width = 10, height = 1, command = login_verify, bg = 'black', fg = 'white').pack()
+        
+def main_screen():
+    global root
+    class Main:
+        def __init__(self, root):
+            root.title("Hotel Blossom Stock")
+            width=640
+            height=350
+            screenwidth = root.winfo_screenwidth()
+            screenheight = root.winfo_screenheight()
+            alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
+            root.geometry(alignstr)
+            root.resizable(width=False, height=False)
+
+            
+
+            Header1 = Label(root, text = "Welcome to", font = ("Tahoma", 25, "bold"), fg = "#0535e6", justify = "center").grid(row = 1, column = 1, padx = 4, pady = 10)
+            Header1 = Label(root, text = "Hotel Blossom's", font = ("Script MT Bold", 30, "bold"), fg = "#aa0bb0", justify = "center").grid(row = 1, column = 2, padx = 4, pady = 10)
+            Header1 = Label(root, text = "Official", font = ("Tahoma", 25, "bold"), fg = "#0535e6", justify = "center").grid(row = 1, column = 4, padx = 3, pady = 10)            
+            Header2 = Label(root, text = "Software", font = ("Tahoma", 25, "bold"), fg = "#0535e6", justify = "center").grid(row = 2, column = 2, columnspan = 1, padx = 1, pady = 5)
+            Label(root, text = "").grid(row = 3, column = 0, columnspan = 6, padx = 20, pady = 10)
+            Reg_1 = Button(root, text = "Register", font = ("Tahoma", 15, "bold"), fg = "white", justify = "center", bg = "black", command = self.Reg_1_command).grid(row = 4, column = 1, columnspan = 1, padx = 20, pady = 10)
+            Log_1 = Button(root, text = "Login", font = ("Tahoma", 15, "bold"), fg = "white", justify = "center", bg = "black", command = self.Log_1_command).grid(row = 4, column = 4, columnspan = 1, padx = 20, pady = 10)
+            Label(root, text = "").grid(row = 5, column = 0, columnspan = 6, padx = 20, pady = 10)
+            au_1 = Button(root, text = "About this Project", font = ("Tahoma", 15, "bold"), fg = "white", justify = "center", bg = "black", command = self.au_1_command).grid(row = 7, column = 2, columnspan = 1, padx = 1, pady = 10)
+
+        def Log_1_command(self):
+            command = login()
+        def Reg_1_command(self):
+            command = register()
+        def au_1_command(self):
+            command = about_this_project()
+
+    if __name__ == "__main__":
+        root = tk.Tk()
+        main = Main(root)
+        root.mainloop()
+
+main_screen()
